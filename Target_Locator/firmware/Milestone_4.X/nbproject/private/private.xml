@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/Daniel/Documents/VT%202016-2017/Embedded/Milestone_4/firmware/src/transmit_handler.c</file>
+            <file>file:/C:/Users/Daniel/Documents/VT%202016-2017/Embedded/Milestone_4/firmware/src/debug.c</file>
+            <file>file:/C:/Users/Daniel/Documents/VT%202016-2017/Embedded/Milestone_4/firmware/src/grid_algorithms.h</file>
+            <file>file:/C:/Users/Daniel/Documents/VT%202016-2017/Embedded/Milestone_4/firmware/src/system_config/default/system_interrupt.c</file>
+            <file>file:/C:/Users/Daniel/Documents/VT%202016-2017/Embedded/Milestone_4/firmware/src/uart_public.h</file>
+            <file>file:/C:/Users/Daniel/Documents/VT%202016-2017/Embedded/Milestone_4/firmware/src/main.c</file>
+            <file>file:/C:/Users/Daniel/Documents/VT%202016-2017/Embedded/Milestone_4/firmware/src/JSON_Parser.c</file>
+            <file>file:/C:/Users/Daniel/Documents/VT%202016-2017/Embedded/Milestone_4/firmware/src/PING_Sensors.c</file>
+            <file>file:/C:/Users/Daniel/Documents/VT%202016-2017/Embedded/Milestone_4/firmware/src/world_public.h</file>
+            <file>file:/C:/Users/Daniel/Documents/VT%202016-2017/Embedded/Milestone_4/firmware/src/PIC_interface.c</file>
+            <file>file:/C:/Users/Daniel/Documents/VT%202016-2017/Embedded/Milestone_4/firmware/src/grid_handler.c</file>
+            <file>file:/C:/Users/Daniel/Documents/VT%202016-2017/Embedded/Milestone_4/firmware/src/grid_algortihms.c</file>
+            <file>file:/C:/Users/Daniel/Documents/VT%202016-2017/Embedded/Milestone_4/firmware/src/JSON_Parser.h</file>
+            <file>file:/C:/Users/Daniel/Documents/VT%202016-2017/Embedded/Milestone_4/firmware/src/UART_TX.c</file>
+            <file>file:/C:/Users/Daniel/Documents/VT%202016-2017/Embedded/Milestone_4/firmware/src/UART_RX.c</file>
+        </group>
+    </open-files>
+</project-private>
