@@ -185,7 +185,7 @@ void DATA_Tasks ( void )
         msg = dataQReceive();
 //        dbgOutputLoc (0x70);
         if (msg.request) {
-            if (strcmp(msg.msg.request.source, "GRB")) {
+            if (strncmp(msg.msg.request.source, "GRB", 3) == 0) {
                 commstats.numJSONRequestsSent += 1;
                 JSONencQSendRequest (msg.msg.request);
             }
@@ -193,60 +193,45 @@ void DATA_Tasks ( void )
                 commstats.numJSONRequestsRecved += 1;
                 commstats.numJSONResponsesSent += 1;
                 RESPONSE_t response;
-                if (msg.msg.request.type == COMMSTATS) {
-                    response.commstats.type = COMMSTATS;
-                    response.commstats.dest = msg.msg.request.source;
-                    response.commstats.source = GRABBER;
+                if (strncmp (msg.msg.request.type, COMMSTATS, 3) == 0) {
+                    strncpy (response.commstats.type, COMMSTATS, 3);
+                    strncpy (response.commstats.dest, msg.msg.request.source, 3);
+                    strncpy (response.commstats.source, GRABBER, 3);
                     response.commstats.ID = msg.msg.request.ID;
                     response.commstats.commstats = commstats;
                     JSONencQSendResponse (response);
                 }
-                else if (msg.msg.request.type == CREDIT) {
-                    response.credit.type = CREDIT;
-                    response.credit.dest = msg.msg.request.source;
-                    response.credit.source = GRABBER;
+                else if (strncmp (msg.msg.request.type, CREDIT, 3) == 0) {
+                    strncpy(response.credit.type, CREDIT, 3);
+                    strncpy(response.credit.dest, msg.msg.request.source, 3);
+                    strncpy(response.credit.source, GRABBER, 3);
                     response.credit.ID = msg.msg.request.ID;
                     response.credit.credit = credit;
                     JSONencQSendResponse (response);
                 }
-                else if (msg.msg.request.type == NODE) {
-                    response.node.type = NODE;
-                    response.node.dest = msg.msg.request.source;
-                    response.node.source = GRABBER;
-                    response.node.ID = msg.msg.request.ID;
-                    response.node.node = nextLoc;
-                    JSONencQSendResponse (response);
-                }
-                else if (msg.msg.request.type == CONFIGLOC) {
-                    response.configloc.type = CONFIGLOC;
-                    response.configloc.dest = msg.msg.request.source;
-                    response.configloc.source = GRABBER;
-                    response.configloc.ID = msg.msg.request.ID;
-                    response.configloc.configloc = currentLoc;
-                    JSONencQSendResponse (response);
-                }
-                else if (msg.msg.request.type == SENSORVAL) {
-                    response.sensorval.type = SENSORVAL;
-                    response.sensorval.dest = msg.msg.request.source;
-                    response.sensorval.source = GRABBER;
+                else if (strncmp(msg.msg.request.type, SENSORVAL, 3) == 0) {
+                    strncpy(response.sensorval.type, SENSORVAL, 3);
+                    strncpy(response.sensorval.dest, msg.msg.request.source,3);
+                    strncpy(response.sensorval.source, GRABBER, 3);
                     response.sensorval.ID = msg.msg.request.ID;
                     response.sensorval.left = leftval;
                     response.sensorval.right = rightval;
                     JSONencQSendResponse (response);
                 }
+                else if (strncmp(msg.msg.request.type, TARGETERR, 3) == 0) {
+                    strncpy(response.targeterr.type, TARGETERR, 3);
+                    strncpy(response.targeterr.dest, msg.msg.request.source,3);
+                    strncpy(response.targeterr.source, GRABBER, 3);
+                    
+                    JSONencQSendResponse (response);
+                }
             }
         }
         else {
-            if (msg.msg.response.commstats.source == GRABBER) {
-                if (msg.msg.response.commstats.type == COMMSTATS) {
+            if (strncmp(msg.msg.response.commstats.source, GRABBER, 3) == 0) {
+                if (strncmp(msg.msg.response.commstats.type, COMMSTATS, 3) == 0) {
                     commstats.numGoodMessagesRecved += msg.msg.response.commstats.commstats.numGoodMessagesRecved;
                     commstats.numCommErrors += msg.msg.response.commstats.commstats.numCommErrors;
-                }
-                else if (msg.msg.response.configloc.type == CONFIGLOC) {
-                    currentLoc = msg.msg.response.configloc.configloc;
-                }
-                else if (msg.msg.response.node.type == NODE) {
-                    nextLoc = msg.msg.response.node.node;
                 }
                 else if (msg.msg.response.sensorval.type == SENSORVAL) {
                     leftval = msg.msg.response.sensorval.left;

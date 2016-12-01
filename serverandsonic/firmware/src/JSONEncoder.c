@@ -94,15 +94,10 @@ JSONENCODER_DATA jsonencoderData;
 // Section: Application Local Functions
 // *****************************************************************************
 // *****************************************************************************
-
-void configLocResp (char * object, CONFIGLOC_t loc)
-{
-    sprintf (object, "{ \"configloc\" : { \"X\" : %d, \"Y\" : %d, \"theta\" : %d } }", loc.x, loc.y, loc.theta);
-}
     
 void creditResp (char * object)
 {
-    sprintf (object, "{ \"credit\" : { \"myName\" : \"PATHMOVEMENT\", \"authorFirstName\" : \"Riley\", \"authorLastName\" : \"Cooper\" } }");
+    sprintf (object, "{ \"CRD\" : { \"myName\" : \"PATHMOVEMENT\", \"authorFirstName\" : \"Riley\", \"authorLastName\" : \"Cooper\" } }");
 }
     
 void commStatsResp (char * object, COMMSTATS_t commstats)
@@ -110,27 +105,9 @@ void commStatsResp (char * object, COMMSTATS_t commstats)
     sprintf (object, "{ \"commstats\" : { \"msLocalTimeTracker\" : %d, \"myName\" : \"PATHMOVEMENT\", \"numGoodMessagesRecved\" : %d, \"numCommErrors\" : %d, \"numJSONRequestsRecved\" : %d, \"numJSONResponsesRecved\" : %d, \"numJSONRequestsSent\" : %d, \"numJSONResponsesSent\" : %d } }", commstats.msLocalTimeTracker, commstats.numGoodMessagesRecved, commstats.numCommErrors, commstats.numJSONRequestsRecved, commstats.numJSONResponsesRecved, commstats.numJSONRequestsSent, commstats.numJSONResponsesSent);
 }
 
-void nodeResp (char * object, NODE_t node)
-{
-    /*
-    char links[(node.numLinks * 4) + 4];
-    memset (links, 0, (node.numLinks * 4) + 4);
-    char * linksLoc = links + 2;
-    links[0] = '[';
-    links[1] = ' ';
-    int i = 0;
-    while (i < node.numLinks - 1) {
-        sprintf (linksLoc, "%2d, ", node.links[i]);
-        i += 1;
-        linksLoc += 4;
-    }
-    sprintf (linksLoc, "%2d ]", node.links[i]); */
-    sprintf (object, "{ \"node\" : { \"nodeID\" : %d, \"X\" : %d, \"Y\" : %d, \"isTarget\" : %d, \"inArena\" : %d } }", node.ID, node.x, node.y, node.isTarget, node.inArena);
-}
-
 void targetErrResp (char * object, TARGETERR_t target)
 {
-    sprintf (object, "{ \"targeterr\" : { \"distance\" : %d, \"theta\" : %d} }", target.distance, target.theta);
+    sprintf (object, "{ \"targeterr\" : { \"DISTANCE\" : %d, \"THETA\" : %d} }", target.distance, target.theta);
 }
 
 void sendRequest (char * out, REQUEST_t request)
@@ -144,26 +121,19 @@ void sendResponse (char * out, RESPONSE_t response)
     memset (object, 0, 128);
     if (response.credit.type == CREDIT) {
         creditResp (object);
-        sprintf (out, "{ \"response\" : { \"type\" : %d, \"responseID\" : %d, \"source\" : %d, \"dest\" : %d, \"credit\" : %s } }", response.credit.type, response.credit.ID, response.credit.source, response.credit.dest, object);
+        sprintf (out, "{ \"RESPONSE\" : { \"SOURCE\" : \"%s\", \"DEST\" : \"%s\", \"ID\" : %d, \"TYPE\" : \"%s\", \"DATA\" : %s } }", response.credit.source, response.credit.dest, response.credit.ID, response.credit.type, object);
     }
     else if (response.commstats.type == COMMSTATS) {
         commStatsResp (object, response.commstats.commstats);
-        sprintf (out, "{ \"response\" : { \"type\" : %d, \"responseID\" : %d, \"source\" : %d, \"dest\" : %d, \"commstats\" : %s } }", response.commstats.type, response.commstats.ID, response.commstats.source, response.commstats.dest, object);
+        sprintf (out, "{ \"RESPONSE\" : { \"SOURCE\" : \"%s\", \"DEST\" : \"%s\", \"ID\" : %d, \"TYPE\" : \"%s\", \"DATA\" : %s } }", response.commstats.type, response.commstats.ID, response.commstats.source, response.commstats.dest, object);
     }
-    else if (response.configloc.type == CONFIGLOC) {
-        configLocResp (object, response.configloc.configloc);
-        sprintf (out, "{ \"response\" : { \"type\" : %d, \"responseID\" : %d, \"source\" : %d, \"dest\" : %d, \"configloc\" : %s } }", response.configloc.type, response.configloc.ID, response.configloc.source, response.configloc.dest, object);
-    }
-    else if (response.node.type == NODE) {
-        nodeResp (object, response.node.node);
-        sprintf (out, "{ \"response\" : { \"type\" : %d, \"responseID\" : %d, \"source\" : %d, \"dest\" : %d, \"credit\" : %s } }", response.node.type, response.node.ID, response.node.source, response.node.dest, object);
-    }
+
     else if (response.sensorval.type == SENSORVAL) {
-        sprintf (out, "{ \"DEBUG\" : { \"left\" : %d, \"right\" : %d, \"center\" : %d, \"x\" : %d, \"y\" : %d, \"direction\" : %d } }", response.sensorval.left, response.sensorval.right, response.sensorval.center, response.sensorval.distance, response.sensorval.theta, response.sensorval.direction);
+        sprintf (out, "{ \"RESPONSE\" : { \"SOURCE\" : \"%s\", \"DEST\" : \"%s\", \"ID\" : %d, \"TYPE\" : \"%s\", \"DATA\" : %s } }", response.sensorval.left, response.sensorval.right, response.sensorval.center, response.sensorval.distance, response.sensorval.theta, response.sensorval.direction);
     }
     else if (response.targeterr.type == TARGETERR) {
         targetErrResp (object, response.targeterr.targeterr);
-        sprintf (out, "{ \"response\" : { \"type\" : %d, \"responseID\" : %d, \"source\" : %d, \"dest\" : %d, \"targeterr\" : %s } }", response.targeterr.type, response.targeterr.ID, response.targeterr.source, response.targeterr.dest, object);
+        sprintf (out, "{ \"RESPONSE\" : { \"SOURCE\" : \"%s\", \"DEST\" : \"%s\", \"ID\" : %d, \"TYPE\" : \"%s\", \"DATA\" : %s } }", response.targeterr.type, response.targeterr.ID, response.targeterr.source, response.targeterr.dest, object);
     }
 }
 

@@ -10,16 +10,16 @@
 extern "C" {
 #endif
 
-#define PATHMOVEMENT 0x50
-#define SEARCHINGMOVEMENT 0x60
-#define TARGETLOCATOR 0x70
-#define GRABBER 0x80
-#define CREDIT 0x10
-#define CONFIGLOC 0x20
-#define COMMSTATS 0x30
-#define NODE 0x40
-#define SENSORVAL 0x05
-#define TARGETERR 0x06
+#define PATHMOVEMENT "PMM"
+#define SEARCHINGMOVEMENT "SMM"
+#define TARGETLOCATOR "TGL"
+#define GRABBER "GRB"
+#define CREDIT "CRD"
+#define CONFIGLOC "CFG"
+#define COMMSTATS "CST"
+#define NODE "NDE"
+#define SENSORVAL "SVL"
+#define TARGETERR "TLC"
     
     typedef struct
     {
@@ -104,46 +104,46 @@ extern "C" {
 
     typedef struct
     {
-        int type;
+        char type[4];
         int ID;
-        int source;
-        int dest;
+        char source[4];
+        char dest[4];
         CREDIT_t credit;
     }CREDITRESP_t;
 
     typedef struct
     {
-        int type;
+        char type[4];
         int ID;
-        int source;
-        int dest;
+        char source[4];
+        char dest[4];
         NODE_t node;
     }NODERESP_t;
 
     typedef struct
     {
-        int type;
+        char type[4];
         int ID;
-        int source;
-        int dest;
+        char source[4];
+        char dest[4];
         CONFIGLOC_t configloc;
     }CONFIGLOCRESP_t;
 
     typedef struct
     {
-        int type;
+        char type[4];
         int ID;
-        int source;
-        int dest;
+        char source[4];
+        char dest[4];
         COMMSTATS_t commstats;
     }COMMSTATSRESP_t;
     
     typedef struct
     {
-        int type;
+        char type[4];
         int ID;
-        int source;
-        int dest;
+        char source[4];
+        char dest[4];
         uint16_t left;
         uint16_t right;
         uint16_t center;
@@ -154,10 +154,10 @@ extern "C" {
     
     typedef struct
     {
-        int type;
+        char type[4];
         int ID;
-        int source;
-        int dest;
+        char source[4];
+        char dest[4];
         TARGETERR_t targeterr;
     }TARGETERRRESP_t;
 

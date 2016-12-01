@@ -243,10 +243,10 @@ void GRABBER_Tasks ( void )
 //    DRV_OC0_Start ();
     
     RESPONSE_t resp;
-    resp.sensorval.type = SENSORVAL;
+    strncpy(resp.sensorval.type, SENSORVAL, 3);
     resp.sensorval.ID = 12;
-    resp.sensorval.source = GRABBER;
-    resp.sensorval.dest = GRABBER;
+    strncpy(resp.sensorval.source, GRABBER, 3);
+    strncpy(resp.sensorval.dest, GRABBER, 3);
     resp.sensorval.left = 0;
     resp.sensorval.right = 0;
     resp.sensorval.center = 0;
@@ -328,44 +328,6 @@ void GRABBER_Tasks ( void )
                     curPixy.x_center = newPixy.x_center;
                     curPixy.y_center = newPixy.y_center;
                 }
-/*
-                if (centerAvg > 100 && centerAvg < 250) {
-                    resp.sensorval.distance = 2;
-                    resp.sensorval.theta = 0;
-                }
-                else if (centerAvg > 40 && centerAvg <= 100) {
-                    bool right = rightAvg < 100 && rightAvg > 30;
-                    bool left = leftAvg < 100 && leftAvg > 30;
-                    if (right && left) {
-                        resp.sensorval.distance = 1;
-                        resp.sensorval.theta = 0;
-                    }
-                    else if (left) {
-                        resp.sensorval.theta = 45;
-                        resp.sensorval.distance = 0;
-                    }
-                    else if (right) {
-                        resp.sensorval.theta = -45;
-                        resp.sensorval.distance = 0;
-                    }
-                }
-                else if (centerAvg < 40 && rightAvg < 40 && leftAvg < 40) {
-                    resp.sensorval.distance = 1;
-                    resp.sensorval.theta = 0;
-                    grabberData.state = GRABBER_HOLDING;
-                }
-                else {
-                    resp.sensorval.distance = 0;
-                    if (rightAvg > 40 && rightAvg < 250) {
-                        resp.sensorval.theta = -45;
-                    }
-                    else if (leftAvg > 40 && leftAvg < 250) {
-                        resp.sensorval.theta = 45;
-                    }
-                    else {
-                        resp.sensorval.theta = 0;
-                    }
-                }*/
                 resp.sensorval.left = leftAvg;
                 resp.sensorval.right = rightAvg;
                 resp.sensorval.center = centerAvg;

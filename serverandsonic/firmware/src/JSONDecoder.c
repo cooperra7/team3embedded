@@ -145,14 +145,14 @@ void JSONDECODER_Tasks ( void )
         jsmntok_t tokens[35];
         jsmn_parse (&parser, buffer, strlen(buffer), tokens, 35);
 
-//        if (strncmp (buffer + tokens[1].start, "request", 7) == 0) {
-//            REQUEST_t myrequest = parseRequest ( buffer, tokens);
+        if (strncmp (buffer + tokens[1].start, "REQUEST", 7) == 0) {
+            REQUEST_t myrequest = parseRequest ( buffer, tokens);
 //            JSONencQSendRequest (myrequest);
-            //            dataQSendRequest (parseRequest(buffer, tokens));
-//        }
-//        else if (strncmp (buffer + tokens[1].start, "response", 8) == 0) {
+            dataQSendRequest (myrequest);
+        }
+        else if (strncmp (buffer + tokens[1].start, "RESPONSE", 8) == 0) {
 //            dataQSendResponse (parseResponse(buffer, tokens));
-//        }
+        }
     }
 }
 
@@ -292,28 +292,20 @@ RESPONSE_t parseResponse (char * buffer, jsmntok_t tokens[])
     RESPONSE_t response;
     char toInt[16];
     memset (toInt, 0 ,16);
-    strncpy (toInt, buffer + tokens[4].start, tokens[4].end - tokens[4].start);
-    response.credit.type = atoi (toInt);
-    memset (toInt, 0 ,16);
-    strncpy (toInt, buffer + tokens[6].start, tokens[6].end - tokens[6].start);
+    strncpy (response.credit.source, buffer + tokens[4].start, tokens[4].end - tokens[4].start);
+    strncpy (response.credit.dest, buffer + tokens[6].start, tokens[6].end - tokens[6].start);
+    strncpy (toInt, buffer + tokens[8].start, tokens[8].end - tokens[8].start);
     response.credit.ID = atoi (toInt);
     memset (toInt, 0 ,16);
-    strncpy (toInt, buffer + tokens[8].start, tokens[8].end - tokens[8].start);
-    response.credit.source = atoi (toInt);
-    memset (toInt, 0 ,16);
-    strncpy (toInt, buffer + tokens[10].start, tokens[10].end - tokens[10].start);
-    response.credit.dest = atoi (toInt);
-    if (response.credit.type == CREDIT) {
+    strncpy (response.credit.type, buffer + tokens[10].start, tokens[10].end - tokens[10].start);
+    if (strncmp (response.credit.type, CREDIT, 3) == 0) {
         response.credit.credit = parseCredit (buffer, tokens + 10);
     }
-    else if (response.node.type == NODE) {
-        response.node.node = parseNode (buffer, tokens + 10);
-    }
-    else if (response.configloc.type == CONFIGLOC) {
-        response.configloc.configloc = parseConfigLoc (buffer, tokens + 10);
-    }
-    else if (response.commstats.type == COMMSTATS) {
+    else if (strncmp(response.commstats.type, COMMSTATS, 3) == 0) {
         response.commstats.commstats = parseCommStats (buffer, tokens + 10);
+    }
+    else if (strncmp(response.targeterr.type, TARGETERR, 3) == 0) {
+    
     }
     return response;
 }
