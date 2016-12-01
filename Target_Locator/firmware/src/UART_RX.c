@@ -168,10 +168,10 @@ int parseHeader()
     checkSum = ((uint16_t)message[11] << 8) + (uint16_t)message[10];
     calcCheckSum = 0;
     if (dest != DEVICEID){
-        return 0;
+        return 0;//TODO
     }
     if (source == DEVICEID){
-        return 0;
+        return 0;//TODO
     }
     return 1;
 }

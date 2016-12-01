@@ -197,7 +197,7 @@ void TRANSMIT_HANDLER_Tasks ( void )
             {
                 message[i] = msgToSend.payload[i-MSG_HEADER_SIZE];
                 sum+= message[i];
-                if(i >= msgToSend.msgSize + MSG_HEADER_SIZE){
+                if(i >= (msgToSend.msgSize + MSG_HEADER_SIZE - 1)){
 //                    for (; i < MAX_WIFLY_SIZE; i++)
 //                    {
 //                        message[i] = 0xAA;

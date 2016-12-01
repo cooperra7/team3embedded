@@ -23,7 +23,7 @@ void printMap(uint8_t worldMap[][MAPDIM])
 ///
 ///
 ///
-void printRel(uint8_t relGrid[][GRID_SIZE])
+void printRel(uint8_t relGrid[][11])
 {
   int i, j;
   for(i = 0; i < GRID_SIZE; i++){
@@ -43,7 +43,7 @@ void transmitObstacle(OBSTACLE_t object, uint8_t msgID)
   // fprintf(stdout, "TRANSMITTING OBSTACLE\n\n");
   //uint8_t buf[512];
   messageItem_t debug;
-  debug.msgSize = sprintf(debug.payload,"{\"RESPONSE\" : { \"SOURCE\" : \"TargetLocator \", \"DEST\" : \"%s\", \"ID\" : %i, \"TYPE\" : \"OBSTACLE\", \"DATA\" : {\"X\": %i, \"Y\": %i, \"LENGTH\": %i, \"WIDTH\": %i, \"THETA\": %i}}}", "PATH", msgID, object.x_center, object.y_center, object.length, object.width, object.theta);
+  debug.msgSize = sprintf(debug.payload,"{\"RESPONSE\" : { \"SOURCE\" : \"%s \", \"DEST\" : \"%s\", \"ID\" : %i, \"TYPE\" : \"%s\", \"DATA\" : {\"X\": %i, \"Y\": %i, \"LENGTH\": %i, \"WIDTH\": %i, \"THETA\": %i}}}", TARGET_LOCATOR, PATH_FINDER, OBSTACLE_TYPE, msgID, object.x_center, object.y_center, object.length, object.width, object.theta);
   SendMessageForTransmitQ(debug);
   //send to queue
   // fprintf(stdout, buf);
@@ -59,7 +59,7 @@ void transmitTarget(TARGET_t target, uint8_t msgID)
   //uint8_t buf[512];
 //  uint16_t length = sprintf(buf, "{response: { source: TargetLocator, Dest: %s, ID: %i, Type: Target, {x: %i, y: %i}}}", "PATH", msgID, target.x_center, target.y_center);
   messageItem_t debug;
-  debug.msgSize = sprintf(debug.payload, "{\"RESPONSE\" : { \"SOURCE\" : \"TargetLocator \", \"DEST\" : \"%s\", \"ID\" : %i, \"TYPE\" : \"TARGET\", \"DATA\" : {\"X\": %i, \"Y\": %i}}}", "PATH", msgID, target.x_center, target.y_center);
+  debug.msgSize = sprintf(debug.payload, "{\"RESPONSE\" : { \"SOURCE\" : \"%s\", \"DEST\" : \"%s\", \"ID\" : %i, \"TYPE\" : \"%s\", \"DATA\" : {\"X\": %i, \"Y\": %i}}}", TARGET_LOCATOR, PATH_FINDER, TARGET_TYPE, msgID, target.x_center, target.y_center);
   SendMessageForTransmitQ(debug);
   // fprintf(stdout, buf);
 }
@@ -68,8 +68,21 @@ void transmitTarget(TARGET_t target, uint8_t msgID)
 ///
 ///
 ///
-void transmitRelative(uint8_t relGrid[][GRID_SIZE], uint8_t msgID)
+void transmitRelative(uint8_t relGrid[][11], uint8_t msgID)
 {
+    messageItem_t debug;
+    debug.msgSize = sprintf(debug.payload,"{\"RESPONSE\" : { \"SOURCE\" : \"%s\", \"DEST\" : \"%s\", \"ID\" : %i, \"TYPE\" : \"%s\", \"DATA\" : [", TARGET_LOCATOR, PATH_FINDER, 0, GRID_TYPE);
+  int i, j;
+  for(i = 0; i < 11; i++){
+    for(j = 0; j < 11; j++){
+        debug.msgSize += sprintf(debug.payload+debug.msgSize, "%i, ",relGrid[i][j]);
+      // fprintf(stdout, "%3i, ", relGrid[i][j]);
+    }
+    // fprintf(stdout, "\n");
+    //// fprintf(stdout, "%i, %i, %i, %i\n", test_grid[i][0], test_grid[i][1], test_grid[i][2], test_grid[i][3]);
+  }
+    debug.msgSize += sprintf(debug.payload+debug.msgSize - 2, " ]}}");
+    SendMessageForTransmitQ(debug);
 //  // fprintf(stdout, "TRANSMITTING RELATIVE DATA\n\n");
 //  //uint8_t buf[512];
 //  uint16_t length = sprintf(buf, "{response: { source: TargetLocator, Dest: %s, ID: %i, Type: ObstacleData, {[", "SEARCHER", msgID);
@@ -171,16 +184,17 @@ void transposeAbsoluteToRelative(uint8_t worldGrid[][MAPDIM],
         uint8_t x_loc, 
         uint8_t y_loc, 
         int16_t theta, 
-        uint8_t relGrid[][GRID_SIZE],
+        uint8_t relGrid[][11],
         uint8_t sizeofRel)
 {
      int i, j;
+     uint8_t temp_grid[22][22];
   float angle = theta*2*M_PI/360;
   float sin_i = sin(angle);
   float cos_i = cos(angle);
   float new_x, new_y;
-  for(i = 0; i< sizeofRel;i++){
-    for(j = 0; j<sizeofRel; j++){
+  for(i = 0; i< 22;i++){
+    for(j = 0; j<22; j++){
       // new_x = i*sin_i + j*cos_i;
       // new_y = i*cos_i - j*sin_i;
       new_x = i*cos_i - j*sin_i;
@@ -188,12 +202,20 @@ void transposeAbsoluteToRelative(uint8_t worldGrid[][MAPDIM],
       int8_t x_val, y_val;
       x_val = ROUND(new_x);
       y_val = ROUND(new_y);
-      relGrid[i][j] = worldGrid[x_val+x_loc - GRID_SIZE/2][y_val+y_loc - GRID_SIZE/2];
+      temp_grid[i][j] = worldGrid[x_val+x_loc - 11][y_val+y_loc - 11];
       //// fprintf(stdout, "rel: %i %i\nx_location: %i\ny_location: %i\nValue: %i\n\n", i, j, x_val+x_loc, y_val+y_loc, worldGrid[x_val+x_loc][y_val+y_loc]);
       // abs_select[i][j].x = x_val + x_loc;
       // abs_select[i][j].y = y_val + y_loc;
       // abs_select[i][j].value = relGrid[i][j];
     }
+  }
+  for(i = 0; i < 11; i++){
+      for(j = 0; j < 11; j++){
+          relGrid[i][j] = ((worldGrid[2*i][2*j] > INITIAL_VAL) ||
+                        (worldGrid[2*i+1][2*j] > INITIAL_VAL) ||
+                        (worldGrid[2*i][2*j+1] > INITIAL_VAL) ||
+                        (worldGrid[2*i+1][2*j+1] > INITIAL_VAL));
+      }
   }
   // fprintf(stdout, "ABOUT TO TRANSMIT RELATIVE\n\n");
   uint8_t msgID = 10;

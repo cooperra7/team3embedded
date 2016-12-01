@@ -11,17 +11,24 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
-#define SEARCHER_MOVEMENT   0
-#define SENSOR_MODULE       1
-#define PATH_FINDER         2
-#define GRABBER_MODULE      3
+#define SEARCHER_MOVEMENT   "SMM"
+#define TARGET_LOCATOR      "TGL"
+#define PATH_FINDER         "PTH"
+#define GRABBER_MODULE      "GRB"
+    
+#define TARGET_TYPE         "TGT"
+#define OBSTACLE_TYPE       "OBS"
+#define GRID_TYPE           "GRD"
+#define LOCATION_TYPE       "LOC"
+#define TARGET_LOC_TYPE     "TLC"
+#define VERTEX_TYPE         "VTX"
     
     
 #define MAX_WIFLY_SIZE 512//Arbitrary maximum value, could increase
 #define MSG_HEADER_SIZE 12//how much data is contained in the header
 #define MAX_PAYLOAD_SIZE (MAX_WIFLY_SIZE - MSG_HEADER_SIZE)//calculates available space
 #define MSG_START 0x4C32A5BD//first 4 bytes of message
-#define DEVICEID SENSOR_MODULE
+#define DEVICEID 1
     
     //struct of the message payload information
 typedef struct

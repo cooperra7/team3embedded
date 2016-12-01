@@ -63,10 +63,10 @@ typedef struct
 
 
 void printMap(uint8_t worldMap[][MAPDIM]);
-void printRel(uint8_t relGrid[][GRID_SIZE]);
+void printRel(uint8_t relGrid[][11]);
 void transmitObstacle(OBSTACLE_t object, uint8_t msgID);
 void transmitTarget(TARGET_t target, uint8_t msgID);
-void transmitRelative(uint8_t relGrid[][GRID_SIZE], uint8_t msgID);
+void transmitRelative(uint8_t relGrid[][11], uint8_t msgID);
 void transposeRelativeToAbsolute(uint8_t relGrid[GRID_SIZE][GRID_SIZE], 
         uint8_t sizeofRel,
         uint8_t x_loc, 
@@ -79,7 +79,7 @@ void transposeAbsoluteToRelative(uint8_t worldGrid[][MAPDIM],
         uint8_t x_loc, 
         uint8_t y_loc, 
         int16_t theta, 
-        uint8_t relGrid[][GRID_SIZE],
+        uint8_t relGrid[][11],
         uint8_t sizeofRel);
 void recursiveSearch(bool tempGrid[][MAPDIM], uint8_t x, uint8_t y, GRID_ITEM_t *LEFT_Item, GRID_ITEM_t *BOT_Item, GRID_ITEM_t *TOP_Item, GRID_ITEM_t *RIGHT_Item);
 void classifyObjects(uint8_t worldGrid[][MAPDIM], uint8_t msgID);

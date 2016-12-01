@@ -85,6 +85,21 @@ void classRequest()
     classifyObjects(world, 0);
 }
 
+void gridRequest()
+{
+    
+    LOCATION_t currentLoc;
+    getLocation(&currentLoc);
+    uint8_t relGrid[11][11];
+    uint8_t sizeofRel = 11;
+    transposeAbsoluteToRelative(world,
+            currentLoc.x, 
+            currentLoc.y, 
+            currentLoc.theta, 
+            relGrid,
+            sizeofRel);
+}
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Callback Functions

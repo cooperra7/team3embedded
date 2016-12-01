@@ -181,18 +181,21 @@ void parseTokens(char data[], jsmntok_t tokenList[], int tokenCount)
 //                );
 //    SendMessageForTransmitQ(debug);
     if(json_token_streq(data, &tokenList[1], "REQUEST")){
-        if(json_token_streq(data, &tokenList[10], "OBSTACLES")){
+        if(json_token_streq(data, &tokenList[10], OBSTACLE_TYPE)){
             //classifyObjects
             debug.msgSize = sprintf(debug.payload,"{\"RESPONSE\" :  { \"TYPE\" : \"OBSTACLE\", \"DATA\" : {\"X\": 0 , \"Y\": 0}}}");
             SendMessageForTransmitQ(debug);
             classRequest();
         }
-        else if(json_token_streq(data, &tokenList[10], "LOCATION")){
+        else if(json_token_streq(data, &tokenList[10], LOCATION_TYPE)){
             
+        }
+        else if(json_token_streq(data, &tokenList[10], GRID_TYPE)){
+            gridRequest();
         }
     }
     else if(json_token_streq(data, &tokenList[1], "RESPONSE")){
-        if(json_token_streq(data, &tokenList[10], "VERTEX")){
+        if(json_token_streq(data, &tokenList[10], VERTEX_TYPE)){
             //messageItem_t debug;
             debug.msgSize = sprintf(debug.payload, 
                         "{\"DEBUG\" : 1 , \"VERTEX\" : %i }", atoi(data + tokenList[13].start)
@@ -206,7 +209,7 @@ void parseTokens(char data[], jsmntok_t tokenList[], int tokenCount)
             updateVertex(newVertex);
             
         }
-        else if(json_token_streq(data, &tokenList[10], "LOCATION")){
+        else if(json_token_streq(data, &tokenList[10], LOCATION_TYPE)){
             LOCATION_t newLocation;
             newLocation.x = atoi(data + tokenList[13].start);
             newLocation.y = atoi(data + tokenList[15].start);

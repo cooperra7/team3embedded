@@ -80,6 +80,7 @@ extern "C" {
     void GRID_QSendFromISR (PING_DATA_t tmrvals);
     void GRID_QReceive (PING_DATA_t *ret);
     void classRequest();
+    void gridRequest();
     
 // *****************************************************************************
 /* Application states

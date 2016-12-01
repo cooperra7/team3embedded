@@ -299,7 +299,7 @@ void processBlocks(PROCESSED_PIXY_ITEM_t blockArray[], uint8_t numBlocks)
             "Y_2", debug_y2
             );
     SendMessageForTransmitQ(debug);
-    debug.msgSize = sprintf(debug.payload, "{\"RESPONSE\" : { \"SOURCE\" : \"TargetLocator \", \"DEST\" : \"%s\", \"ID\" : %i, \"TYPE\" : \"LOCATION\", \"DATA\" : {\"X\" : %u, \"Y\" : %u, \"THETA\" : %i", "SEARCHER", 0, robot_x, robot_y, robot_theta);
+    debug.msgSize = sprintf(debug.payload, "{\"RESPONSE\" : { \"SOURCE\" : \"%s \", \"DEST\" : \"%s\", \"ID\" : %i, \"TYPE\" : \"%s\", \"DATA\" : {\"X\" : %u, \"Y\" : %u, \"THETA\" : %i", TARGET_LOCATOR, SEARCHER_MOVEMENT, LOCATION_TYPE, 0, robot_x, robot_y, robot_theta);
     SendMessageForTransmitQ(debug);
     if(temp_robot_y == 0){
         stop = true;
