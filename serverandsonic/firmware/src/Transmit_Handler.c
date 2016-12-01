@@ -186,7 +186,10 @@ void TRANSMIT_HANDLER_Tasks ( void )
             message[3] = ((MSG_START & 0x000000FF) >> 0);
             message[4] = messageCount & 0x00FF;
             message[5] = (messageCount & 0xFF00) >> 8;
-            message[6] = msgToSend.msgSize;
+            message[6] = 1;//dest
+            message[7] = 3;//source//DEVICEID
+            message[8] = (msgToSend.msgSize & 0xFF);
+            message[9] = (msgToSend.msgSize & 0xFF00) >> 8;
             uint16_t sum = 0;
             messageCount++;
             int i;
@@ -194,20 +197,18 @@ void TRANSMIT_HANDLER_Tasks ( void )
             {
                 message[i] = msgToSend.payload[i-MSG_HEADER_SIZE];
                 sum+= message[i];
-                if(i >= msgToSend.msgSize + MSG_HEADER_SIZE){
-                    for (; i < MAX_WIFLY_SIZE; i++)
-                    {
-                        message[i] = 0xAA;
-                        sum+=0xAA;
-                    }
+                if(i >= (msgToSend.msgSize + MSG_HEADER_SIZE - 1)){
                     break;
                 }
             }
-            message[7] = (sum & 0x00FF);
-            message[8] = (sum & 0xFF00) >> 8;
-            for(i = 0; i < MAX_WIFLY_SIZE; i++){
+            message[10] = (sum & 0x00FF);
+            message[11] = (sum & 0xFF00) >> 8;
+            for(i = 0; i < msgToSend.msgSize + MSG_HEADER_SIZE; i++){
+//            for(i = 0; i < MAX_WIFLY_SIZE; i++){
                 UARTSendByteToTXQ(message[i]);
+//                PLIB_INT_SourceEnable(USART_ID_1, INT_SOURCE_USART_1_TRANSMIT);
             }
+//            PLIB_INT_SourceEnable(USART_ID_1, INT_SOURCE_USART_1_TRANSMIT);
             break;
         }
 

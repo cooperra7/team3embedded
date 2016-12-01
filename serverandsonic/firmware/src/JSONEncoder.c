@@ -135,7 +135,7 @@ void targetErrResp (char * object, TARGETERR_t target)
 
 void sendRequest (char * out, REQUEST_t request)
 {
-    sprintf (out, "{ \"request\" : { \"type\" : %d, \"requestID\" : %d, \"source\" : %d, \"dest\" : %d } }", request.type, request.ID, request.source, request.dest);
+    sprintf (out, "{ \"REQUEST\" : { \"SOURCE\" : \"%s\", \"DEST\" : \"%s\", \"ID\" : %d, \"TYPE\" : \"%s\" } }", request.source, request.dest, request.ID, request.type);
 }
 
 void sendResponse (char * out, RESPONSE_t response)
@@ -209,7 +209,10 @@ void JSONENCODER_Tasks ( void )
         int dest;
         if (msg.request) {
             sendRequest (buffer, msg.msg.request);
-            dest = msg.msg.request.dest;
+            if (strcmp(msg.msg.request.dest, "TGL")) {
+                dest = 1;
+            }
+            else {dest = 0;}
         }
         else {
             sendResponse (buffer, msg.msg.response);

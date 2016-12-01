@@ -15,8 +15,8 @@ extern "C" {
 #endif
     
     
-#define MAX_WIFLY_SIZE 256//Arbitrary maximum value, could increase
-#define MSG_HEADER_SIZE 9//how much data is contained in the header
+#define MAX_WIFLY_SIZE 512//Arbitrary maximum value, could increase
+#define MSG_HEADER_SIZE 12//how much data is contained in the header
 #define MAX_PAYLOAD_SIZE (MAX_WIFLY_SIZE - MSG_HEADER_SIZE)//calculates available space
 #define MSG_START 0x4C32A5BD//first 4 bytes of message
     

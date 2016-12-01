@@ -127,12 +127,13 @@ int UARTReceiveByteFromRXQ(uint8_t *byte)
    return 0;
 }
 
-
-static uint8_t byteCount = 0;
+static uint16_t byteCount = 0;
 static uint16_t checkSum;
 static uint16_t calcCheckSum;
 static uint16_t messageNumber;
-static uint8_t messageSize;
+static uint16_t messageSize;
+static uint8_t dest;
+static uint8_t source;
 static uint8_t message[MAX_WIFLY_SIZE];
 
 int checkStart(uint8_t byte)
@@ -156,21 +157,30 @@ int checkStart(uint8_t byte)
     return 1;
 }
 
-void parseHeader()
+int parseHeader()
 {
     messageNumber = ((uint16_t)message[5] << 8) + (uint16_t)message[4];
-    messageSize = message[6];
-    checkSum = ((uint16_t)message[8] << 8) + (uint16_t)message[7];
+    dest = message[6];
+    source = message[7];
+    messageSize = ((uint16_t)message[9] << 8) + (uint16_t)message[8];
+    checkSum = ((uint16_t)message[11] << 8) + (uint16_t)message[10];
     calcCheckSum = 0;
+        if (dest != 3){
+        return 0;
+    }
+    if (source == 3){
+        return 0;
+    }
+    return 1;
 }
 
 void parseMessage()
 {
-/*    if(calcCheckSum != checkSum){
+    if(calcCheckSum != checkSum){
         //Potentially send an error message to request retry
         byteCount = 0;
         return;
-    }*/
+    }
     messageItem_t receivedMsg;
     int i;
     for(i = 0; i < messageSize; i++)
@@ -184,18 +194,23 @@ void parseMessage()
 
 void processByte(uint8_t byte)
 {
-    if (!checkStart(byte)){
+       if (!checkStart(byte)){
         return;
     }
     message[byteCount] = byte;
     byteCount++;
     calcCheckSum += byte;
     if(byteCount == MSG_HEADER_SIZE){
-        parseHeader();
+        if (!parseHeader()){
+            byteCount = 0;
+        }
         return;
     }
-    if(byteCount == MAX_WIFLY_SIZE){
+    if(byteCount == MSG_HEADER_SIZE + messageSize){
         parseMessage();
+    }
+    if (byteCount == MAX_WIFLY_SIZE){
+        byteCount = 0;
     }
 }
 

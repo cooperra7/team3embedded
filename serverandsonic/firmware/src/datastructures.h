@@ -94,10 +94,10 @@ extern "C" {
 
     typedef struct
     {
-        int type;
+        char type[4];
         int ID;
-        int source;
-        int dest;
+        char source[4];
+        char dest[4];
     }REQUEST_t;
     
     REQUEST_t requestInit (int newType, int newID, int newSource, int newDest);

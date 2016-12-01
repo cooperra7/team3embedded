@@ -185,7 +185,7 @@ void DATA_Tasks ( void )
         msg = dataQReceive();
 //        dbgOutputLoc (0x70);
         if (msg.request) {
-            if (msg.msg.request.source == GRABBER) {
+            if (strcmp(msg.msg.request.source, "GRB")) {
                 commstats.numJSONRequestsSent += 1;
                 JSONencQSendRequest (msg.msg.request);
             }
@@ -251,7 +251,12 @@ void DATA_Tasks ( void )
                 else if (msg.msg.response.sensorval.type == SENSORVAL) {
                     leftval = msg.msg.response.sensorval.left;
                     rightval = msg.msg.response.sensorval.right;
-                    JSONencQSendResponse (msg.msg.response);
+                    REQUEST_t testReq;
+                    testReq.ID = 1;
+                    strcpy(testReq.dest, "TGL");
+                    strcpy(testReq.source, "GRB");
+                    strcpy(testReq.type, "OBS");
+                    JSONencQSendRequest (testReq);
                 }
             }
             else {
