@@ -145,14 +145,14 @@ void JSONDECODER_Tasks ( void )
         jsmntok_t tokens[35];
         jsmn_parse (&parser, buffer, strlen(buffer), tokens, 35);
 
-        if (strncmp (buffer + tokens[1].start, "request", 7) == 0) {
-            REQUEST_t myrequest = parseRequest ( buffer, tokens);
-            JSONencQSendRequest (myrequest);
+//        if (strncmp (buffer + tokens[1].start, "request", 7) == 0) {
+//            REQUEST_t myrequest = parseRequest ( buffer, tokens);
+//            JSONencQSendRequest (myrequest);
             //            dataQSendRequest (parseRequest(buffer, tokens));
-        }
-        else if (strncmp (buffer + tokens[1].start, "response", 8) == 0) {
+//        }
+//        else if (strncmp (buffer + tokens[1].start, "response", 8) == 0) {
 //            dataQSendResponse (parseResponse(buffer, tokens));
-        }
+//        }
     }
 }
 
@@ -176,7 +176,7 @@ void JSONdecQReceive (char * buffer)
 NODE_t parseNode (char * buffer, jsmntok_t tokens[])
 {
     NODE_t node;
-    char toInt[16];
+    /*char toInt[16];
     memset (toInt, 0 ,16);
     strncpy (toInt, buffer + tokens[4].start, tokens[4].end - tokens[4].start);
     node.ID = atoi (toInt);
@@ -197,13 +197,14 @@ NODE_t parseNode (char * buffer, jsmntok_t tokens[])
     }
     else {
         node.inArena = false;
-    }
+    }*/
     return node;
 }
 
 CONFIGLOC_t parseConfigLoc (char * buffer, jsmntok_t tokens[])
 {
     CONFIGLOC_t configloc;
+    /*
     char toInt[16];
     memset (toInt, 0 ,16);
     strncpy (toInt, buffer + tokens[4].start, tokens[4].end - tokens[4].start);
@@ -213,7 +214,7 @@ CONFIGLOC_t parseConfigLoc (char * buffer, jsmntok_t tokens[])
     configloc.y = atoi (toInt);
     memset (toInt, 0 ,16);
     strncpy (toInt, buffer + tokens[8].start, tokens[8].end - tokens[8].start);
-    configloc.theta = atoi (toInt);
+    configloc.theta = atoi (toInt);*/
     return configloc;
 }
 
@@ -277,17 +278,12 @@ REQUEST_t parseRequest (char * buffer, jsmntok_t tokens[])
     REQUEST_t request;
     char toInt[16];
     memset (toInt, 0 ,16);
-    strncpy (toInt, buffer + tokens[4].start, tokens[4].end - tokens[4].start);
-    request.type = atoi (toInt);
-    memset (toInt, 0 ,16);
-    strncpy (toInt, buffer + tokens[6].start, tokens[6].end - tokens[6].start);
+    strncpy (request.source, buffer + tokens[4].start, tokens[4].end - tokens[4].start);
+    strncpy (request.dest, buffer + tokens[6].start, tokens[6].end - tokens[6].start);
+    strncpy (toInt, buffer + tokens[8].start, tokens[8].end - tokens[8].start);
     request.ID = atoi (toInt);
     memset (toInt, 0 ,16);
-    strncpy (toInt, buffer + tokens[8].start, tokens[8].end - tokens[8].start);
-    request.source = atoi (toInt);
-    memset (toInt, 0 ,16);
-    strncpy (toInt, buffer + tokens[10].start, tokens[10].end - tokens[10].start);
-    request.dest = atoi (toInt);
+    strncpy (request.type, buffer + tokens[10].start, tokens[10].end - tokens[10].start);
     return request;
 }
 
