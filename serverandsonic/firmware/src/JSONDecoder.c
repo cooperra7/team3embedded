@@ -117,7 +117,7 @@ void JSONDECODER_Initialize ( void )
 {
     /* Place the App state machine in its initial state. */
     jsondecoderData.state = JSONDECODER_STATE_INIT;
-
+    dbgOutputLoc (0x45);
     JSONdecQInit();
 }
 
@@ -148,6 +148,7 @@ void JSONDECODER_Tasks ( void )
         if (strncmp (buffer + tokens[1].start, "REQUEST", 7) == 0) {
             REQUEST_t myrequest = parseRequest ( buffer, tokens);
 //            JSONencQSendRequest (myrequest);
+            dbgOutputLoc (0x40);
             dataQSendRequest (myrequest);
         }
         else if (strncmp (buffer + tokens[1].start, "RESPONSE", 8) == 0) {

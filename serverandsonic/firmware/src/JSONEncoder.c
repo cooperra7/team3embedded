@@ -176,17 +176,35 @@ void JSONENCODER_Tasks ( void )
         memset (buffer, 0, 512);
         JSONRESPMSG_t msg;
         msg = JSONencQReceive();
+        dbgOutputLoc(0x43);
         int dest;
         if (msg.request) {
+            dbgOutputLoc(0x44);
             sendRequest (buffer, msg.msg.request);
-            if (strcmp(msg.msg.request.dest, "TGL")) {
+            if (strncmp(msg.msg.request.dest, "TGL", 3) == 0) {
                 dest = 1;
             }
-            else {dest = 0;}
+            else if (strncmp(msg.msg.request.dest, "SMM", 3) == 0) {
+                dest = 0;
+            }
+            else if (strncmp(msg.msg.request.dest, "SVR", 3) == 0) {
+                dest = 4;
+            }
         }
         else {
             sendResponse (buffer, msg.msg.response);
-            dest = msg.msg.response.credit.dest;
+            dbgOutputLoc (0x46);
+            if (strncmp(msg.msg.response.credit.dest, "TGL", 3) == 0) {
+                dbgOutputLoc(0x47);
+                dest = 1;
+            }
+            else if (strncmp(msg.msg.response.credit.dest, "SMM", 3) == 0) {
+                dest = 0;
+            }
+            else if (strncmp(msg.msg.response.credit.dest, "SVR", 3) == 0) {
+                dest = 4;
+                dbgOutputLoc(0x42);
+            }
         }
         messageItem_t message;
         message.msgSize = strlen (buffer);

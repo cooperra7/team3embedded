@@ -164,7 +164,6 @@ void processPixyMessage(uint8_t array[], uint8_t byteCount)
 
 void processPixyByte(uint8_t newByte)
 {
-    dbgOutputLoc (newByte);
     if(byteCount == 0 && !(newByte == 0x55 || newByte == 0x56)){// || newByte == 0x00)){
         return;
     }
@@ -329,9 +328,6 @@ void processPixyItem(PIXY_DATA_t *data, PROCESSED_PIXY_ITEM_t *processed)
 
 void debugPIXY_MESSAGE(PIXY_DATA_t data)
 {
-    dbgOutputLoc (0x6A);
-    dbgOutputLoc (0xA6);
-    dbgOutputLoc (0x6A);
     messageItem_t pixy_debug;
     pixy_debug.msgSize = sprintf(pixy_debug.payload, 
             "{\"DEBUG\" : { \"PIXY\" : { \"%s\" : %u  , \"%s\" : %u  , \"%s\" : %u  , \"%s\" : %u  , \"%s\" : %u } } }\n", 
@@ -434,7 +430,6 @@ void PIC_INTERFACE_Tasks ( void )
                 break;
             }
             else{
-                dbgOutputLoc (0xFA);
                 debugPIXY_MESSAGE(data);
                 QSendPixy (data);
                // debugPIXY_PROCESSED(processed_item);

@@ -91,7 +91,6 @@ static QueueHandle_t UART_RX_Byte_Q;
 */
 void APP_USARTReceiveEventHandler(const SYS_MODULE_INDEX index)
 {
-    dbgOutputLoc(0x19);
     while(PLIB_USART_ReceiverDataIsAvailable(USART_ID_1)){
         uint8_t temp = PLIB_USART_ReceiverByteReceive(USART_ID_1);
         UARTSendByteTeRXQFromISR(temp);
@@ -281,7 +280,6 @@ void UART_RX_Tasks ( void )
         {
             uint8_t byte;
             UARTReceiveByteFromRXQ(&byte);
-            dbgOutputLoc (byte);
             //UARTSendByteToTXQ(byte);
             processByte(byte);
             break;

@@ -152,8 +152,6 @@ void DATA_Initialize ( void )
     /* Place the App state machine in its initial state. */
     dataData.state = DATA_STATE_INIT;
     dataQInit ();
-    
-   dbgOutputLoc (0x96);
 }
 
 
@@ -222,7 +220,6 @@ void DATA_Tasks ( void )
                     strncpy(response.targeterr.type, TARGETERR, 3);
                     strncpy(response.targeterr.dest, msg.msg.request.source,3);
                     strncpy(response.targeterr.source, GRABBER, 3);
-                    
                     JSONencQSendResponse (response);
                 }
             }
@@ -241,12 +238,12 @@ void DATA_Tasks ( void )
                     strcpy(testReq.dest, "TGL");
                     strcpy(testReq.source, "GRB");
                     strcpy(testReq.type, "OBS");
-                    JSONencQSendRequest (testReq);
+//                    JSONencQSendRequest (testReq);
                 }
             }
             else {
                 commstats.numJSONResponsesRecved += 1;
-                if (msg.msg.response.targeterr.type == TARGETERR) {
+                if (strncmp(msg.msg.response.targeterr.type, TARGETERR, 3) == 0) {
                     VALUES_t vals;
                     vals.val1 = msg.msg.response.targeterr.targeterr.distance;
                     vals.val2 = msg.msg.response.targeterr.targeterr.theta;
