@@ -301,7 +301,7 @@ void processPixyItem(PIXY_DATA_t *data, PROCESSED_PIXY_ITEM_t *processed)
     if(data->ID == TARGET_CODE){
         data->ID = PIXY_TARGET;
         processed->ID = PIXY_TARGET;
-    }
+    }/*
     else if (data->ID == VERTEX_1_CODE){
         data->ID = PIXY_VERTEX_1;
         processed->ID = PIXY_VERTEX_1;
@@ -313,11 +313,11 @@ void processPixyItem(PIXY_DATA_t *data, PROCESSED_PIXY_ITEM_t *processed)
         processed->ID = PIXY_VERTEX_2;
         processed->x_center = 118;
         processed->y_center = 0;
-    }
-/*    else{
+    */
+    else{
         data->ID = PIXY_INVALID;
         processed->ID = PIXY_INVALID;
-    }*/
+    }
     processed->theta = ((int16_t)160 - data->x_center - 2)/4 + 1;
     
 }
@@ -336,7 +336,7 @@ void debugPIXY_MESSAGE(PIXY_DATA_t data)
             "yCoord", data.y_center, 
             "Width", data.width,
             "Height", data.height);
-    SendMessageForTransmitQ(pixy_debug);
+//    SendMessageForTransmitQ(pixy_debug);
 }
 
 void debugPIXY_PROCESSED(PROCESSED_PIXY_ITEM_t data)
@@ -349,7 +349,7 @@ void debugPIXY_PROCESSED(PROCESSED_PIXY_ITEM_t data)
             "XCoord", data.x_center,
             "YCoord", data.y_center
             );
-    SendMessageForTransmitQ(debug);
+  //  SendMessageForTransmitQ(debug);
 }
 
 // *****************************************************************************
@@ -418,7 +418,6 @@ void PIC_INTERFACE_Tasks ( void )
         {
             while (1) {
             PIXY_DATA_t data;
-//            dbgOutputLoc (0x6D);
             PixyReceiveByteFromRXQ(&data);
             PROCESSED_PIXY_ITEM_t processed_item;
             processPixyItem(&data, &processed_item);

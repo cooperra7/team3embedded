@@ -95,6 +95,16 @@ void IntHandlerDrvTmrInstance0(void)
         DRV_OC2_Stop ();
         DRV_OC1_Start ();
     }
+/*    char buffer[10];
+    memset (buffer, 0, 10);
+    strcpy (buffer, "\nhello\n\n");
+    messageItem_t message;
+    message.msgSize = strlen (buffer);
+    int i = 0;
+    for (i = 0; i < message.msgSize; i++) {
+        message.payload[i] = buffer[i];
+    }
+    SendMessageForTransmitQ (message);*/
     PLIB_INT_SourceFlagClear(INT_ID_0,INT_SOURCE_TIMER_2);
 }
  void IntHandlerDrvUsartInstance0(void)
@@ -127,7 +137,6 @@ void IntHandlerDrvUsartInstance1(void)
  
 void IntHandlerDrvICInstance0(void)
 {
-//    PLIB_PORTS_Write (PORTS_ID_0, PORT_CHANNEL_E, 0x00FF & 0x91);
     VALUES_t vals;
     vals.sensor = 0x22;
     vals.val1 = DRV_IC0_Capture16BitDataRead();
@@ -138,16 +147,17 @@ void IntHandlerDrvICInstance0(void)
 void IntHandlerDrvICInstance1(void)
 {
     VALUES_t vals;
-    vals.sensor = 0x11;
+    vals.sensor = 0x00;
     vals.val1 = DRV_IC1_Capture16BitDataRead();
     vals.val2 = DRV_IC1_Capture16BitDataRead();
     QSendFromISR (vals);
+    
     PLIB_INT_SourceFlagClear(INT_ID_0, INT_SOURCE_INPUT_CAPTURE_1);
 }
 void IntHandlerDrvICInstance2(void)
 {
     VALUES_t vals;
-    vals.sensor = 0x00;
+    vals.sensor = 0x11;
     vals.val1 = DRV_IC2_Capture16BitDataRead();
     vals.val2 = DRV_IC2_Capture16BitDataRead();
     QSendFromISR (vals);

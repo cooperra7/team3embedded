@@ -10,16 +10,16 @@
 extern "C" {
 #endif
 
-#define PATHMOVEMENT "PMM"
-#define SEARCHINGMOVEMENT "SMM"
-#define TARGETLOCATOR "TGL"
-#define GRABBER "GRB"
-#define CREDIT "CRD"
-#define CONFIGLOC "CFG"
-#define COMMSTATS "CST"
-#define NODE "NDE"
-#define SENSORVAL "SVL"
-#define TARGETERR "TLC"
+#define PATHMOVEMENT "PMM\0"
+#define SEARCHINGMOVEMENT "SMM\0"
+#define TARGETLOCATOR "TGL\0"
+#define GRABBER "GRB\0"
+#define CREDIT "CRD\0"
+#define CONFIGLOC "CFG\0"
+#define COMMSTATS "CST\0"
+#define NODE "NDE\0"
+#define SENSORVAL "SVL\0"
+#define TARGETERR "TLC\0"
     
     typedef struct
     {
@@ -38,8 +38,11 @@ extern "C" {
     
     typedef struct
     {
-        int distance;
-        int theta;
+        int x;
+        int y;
+        int unknown;
+        int left;
+        int right;
     }TARGETERR_t;
     
     typedef struct

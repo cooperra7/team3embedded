@@ -267,10 +267,19 @@ TARGETERR_t parseTargeterr (char * buffer, jsmntok_t tokens[])
     char toInt[16];
     memset(toInt, 0, 16);
     strncpy (toInt, buffer + tokens[4].start, tokens[4].end - tokens[4].start);
-    targeterr.distance = atoi (toInt);
+    targeterr.x = atoi (toInt);
     memset(toInt, 0, 16);
     strncpy (toInt, buffer + tokens[6].start, tokens[6].end - tokens[6].start);
-    targeterr.theta = atoi (toInt);
+    targeterr.y = atoi (toInt);
+    memset(toInt, 0, 16);
+    strncpy (toInt, buffer + tokens[8].start, tokens[8].end - tokens[8].start);
+    targeterr.left = atoi (toInt);
+    memset(toInt, 0, 16);
+    strncpy (toInt, buffer + tokens[10].start, tokens[10].end - tokens[10].start);
+    targeterr.right = atoi (toInt);
+    memset(toInt, 0, 16);
+    strncpy (toInt, buffer + tokens[12].start, tokens[12].end - tokens[12].start);
+    targeterr.unknown = atoi (toInt);
     return targeterr;
 }
 
@@ -306,7 +315,7 @@ RESPONSE_t parseResponse (char * buffer, jsmntok_t tokens[])
         response.commstats.commstats = parseCommStats (buffer, tokens + 10);
     }
     else if (strncmp(response.targeterr.type, TARGETERR, 3) == 0) {
-    
+        response.targeterr.targeterr = parseTargeterr (buffer, tokens + 10);
     }
     return response;
 }

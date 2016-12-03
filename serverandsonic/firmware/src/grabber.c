@@ -196,10 +196,10 @@ void GRABBER_Initialize ( void )
     grabberData.state = GRABBER_IDLE;
 
     
-    PLIB_PORTS_DirectionOutputSet (PORTS_ID_0, PORT_CHANNEL_E, 0x01FF);
+//    PLIB_PORTS_DirectionOutputSet (PORTS_ID_0, PORT_CHANNEL_E, 0x01FF);
 //    PLIB_PORTS_DirectionOutputSet (PORTS_ID_0, PORT_CHANNEL_A, 0x00EC);
 //    PLIB_PORTS_DirectionOutputSet (PORTS_ID_0, PORT_CHANNEL_G, 0x7000);
-    PLIB_PORTS_DirectionOutputSet (PORTS_ID_0, PORT_CHANNEL_D, 0x2293);
+//    PLIB_PORTS_DirectionOutputSet (PORTS_ID_0, PORT_CHANNEL_D, 0x2293);
 //    PLIB_PORTS_DirectionOutputSet (PORTS_ID_0, PORT_CHANNEL_C, 0x6010);
     
     DRV_TMR0_Initialize (); /* Initialize the driver timer */
@@ -211,7 +211,7 @@ void GRABBER_Initialize ( void )
     OCenabled = 0;
 
     PLIB_PORTS_PinDirectionOutputSet (PORTS_ID_0, PORT_CHANNEL_D, 3);
-    PLIB_PORTS_PinDirectionOutputSet (PORTS_ID_0, PORT_CHANNEL_D, 4);
+//    PLIB_PORTS_PinDirectionOutputSet (PORTS_ID_0, PORT_CHANNEL_D, 4);
     PLIB_PORTS_PinDirectionInputSet (PORTS_ID_0, PORT_CHANNEL_D, 10);
     PLIB_PORTS_PinDirectionInputSet (PORTS_ID_0, PORT_CHANNEL_D, 8);
 
@@ -243,6 +243,9 @@ void GRABBER_Tasks ( void )
 //    DRV_OC0_Start ();
     
     RESPONSE_t resp;
+    memset (resp.sensorval.type, 0, 4);
+    memset (resp.sensorval.source, 0, 4);
+    memset (resp.sensorval.dest, 0, 4);
     strncpy(resp.sensorval.type, SENSORVAL, 3);
     resp.sensorval.ID = 12;
     strncpy(resp.sensorval.source, GRABBER, 3);
@@ -254,8 +257,21 @@ void GRABBER_Tasks ( void )
     resp.sensorval.theta = 0;
     resp.sensorval.direction = 0;
     
-    dataQSendResponse (resp);
+    RESPONSE_t TLCresp;
+    memset (TLCresp.sensorval.type, 0, 4);
+    memset (TLCresp.sensorval.source, 0, 4);
+    memset (TLCresp.sensorval.dest, 0, 4);
+    strncpy(TLCresp.targeterr.type, TARGETERR, 3);
+    TLCresp.targeterr.ID = 0;
+    strncpy(TLCresp.targeterr.source, GRABBER, 3);
+    strncpy(TLCresp.targeterr.dest, GRABBER, 3);
+    TLCresp.targeterr.targeterr.left = 0;
+    TLCresp.targeterr.targeterr.right = 0;
+    TLCresp.targeterr.targeterr.unknown = 1;
+    TLCresp.targeterr.targeterr.x = 0;
+    TLCresp.targeterr.targeterr.y = 0;
     
+    dataQSendResponse (TLCresp);
     
     int count = 0;
     int lcount = 0;
@@ -303,22 +319,16 @@ void GRABBER_Tasks ( void )
                     int step = diff * 32;
                     int cm = step / 58;
                     if (vals.sensor == 0x00) {
-                        if (left) {
                             leftAvg = cm;
                             lcount++;
-                        }
                     }
                     else if (vals.sensor == 0x11) {
-                        if (right) {
                             rightAvg = cm;
                             rcount++;
-                        }
                     }
                     else if (vals.sensor == 0x22) {
-                        if (center) {
                             centerAvg = cm;
                             ccount++;
-                        }
                     }
                 }
                 else if (msg.type == 2) {
@@ -328,28 +338,61 @@ void GRABBER_Tasks ( void )
                     curPixy.x_center = newPixy.x_center;
                     curPixy.y_center = newPixy.y_center;
                 }
+                /*resp.sensorval.left = vals.val1;
+                resp.sensorval.right = vals.val2;
+                resp.sensorval.center = vals.val1-vals.val2;*/
                 resp.sensorval.left = leftAvg;
                 resp.sensorval.right = rightAvg;
-                resp.sensorval.center = centerAvg;
-                
-                if (leftAvg < 200 && rightAvg < 200 && curPixy.x_center < 200 && curPixy.x_center > 120) {
+                resp.sensorval.center = msg.type;
+
+                if (leftAvg < 200 && rightAvg < 200) {
                     POS_t pos = getPos (leftAvg, rightAvg);
                     resp.sensorval.direction = 0;
+                    TLCresp.targeterr.targeterr.left = 0;
+                    TLCresp.targeterr.targeterr.right = 0;
+                    TLCresp.targeterr.targeterr.unknown = 0;
+                    TLCresp.targeterr.targeterr.x = pos.x;
+                    TLCresp.targeterr.targeterr.y = pos.y;
                     resp.sensorval.distance = pos.x;
                     resp.sensorval.theta = pos.y;
                 }
-                else {
-                    if (curPixy.x_center > 160) {
+                if (!(curPixy.x_center < 220 && curPixy.x_center > 100)) {
+                    if ((curPixy.x_center > 220) || ((resp.sensorval.left < resp.sensorval.right) && curPixy.x_center > 170)) {
+                        TLCresp.targeterr.targeterr.left = 0;
+                        TLCresp.targeterr.targeterr.right = 1;
+                        TLCresp.targeterr.targeterr.unknown = 0;
                         resp.sensorval.direction = 1;
                     }
-                    else if (curPixy.x_center < 160) {
+                    else if ((curPixy.x_center < 100) || ((resp.sensorval.left > resp.sensorval.right) && curPixy.x_center < 150)) {
+                        TLCresp.targeterr.targeterr.left = 1;
+                        TLCresp.targeterr.targeterr.right = 0;
+                        TLCresp.targeterr.targeterr.unknown = 0;
                         resp.sensorval.direction = -1;
+                    }
+                    else {
+                        TLCresp.targeterr.targeterr.left = 0;
+                        TLCresp.targeterr.targeterr.right = 0;
+                        TLCresp.targeterr.targeterr.unknown = 1; 
                     }
                     resp.sensorval.distance = -1;
                     resp.sensorval.theta = -1;
+                    TLCresp.targeterr.targeterr.x = 0;
+                    TLCresp.targeterr.targeterr.y = 0;
                 }
-
-                dataQSendResponse(resp);
+//if (resp.sensorval.center == 1) {
+                char buffer[512];
+                memset (buffer, 0, 512);
+                sprintf (buffer, "{ \"DEBUG\" : { \"left\" : %d, \"right\" : %d, \"center\" : %d, \"x\" : %d, \"y\" : %d, \"direction\" : %d , \"px\" : %d} }\r\n", resp.sensorval.left, resp.sensorval.right, resp.sensorval.center, resp.sensorval.distance, resp.sensorval.theta, resp.sensorval.direction, curPixy.x_center);
+                messageItem_t message;
+                message.msgSize = strlen (buffer);
+                int i = 0;
+                for (i = 0; i < message.msgSize; i++) {
+                    message.payload[i] = buffer[i];
+                }
+//                SendMessageForTransmitQ (message);
+//}
+//                dataQSendResponse(resp);
+                dataQSendResponse(TLCresp);
                 break;
             }
             case GRABBER_HOLDING : {

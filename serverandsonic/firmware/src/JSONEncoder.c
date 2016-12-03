@@ -107,7 +107,7 @@ void commStatsResp (char * object, COMMSTATS_t commstats)
 
 void targetErrResp (char * object, TARGETERR_t target)
 {
-    sprintf (object, "{ \"targeterr\" : { \"DISTANCE\" : %d, \"THETA\" : %d} }", target.distance, target.theta);
+    sprintf (object, "{ \"targeterr\" : { \"X\" : %d, \"Y\" : %d, \"LEFT\" : %d, \"RIGHT\" : %d, \"UNKNOWN\" : %d} }", target.x, target.y, target.left, target.right, target.unknown);
 }
 
 void sendRequest (char * out, REQUEST_t request)
@@ -119,7 +119,7 @@ void sendResponse (char * out, RESPONSE_t response)
 {
     char object[128];
     memset (object, 0, 128);
-    if (response.credit.type == CREDIT) {
+   /* if (response.credit.type == CREDIT) {
         creditResp (object);
         sprintf (out, "{ \"RESPONSE\" : { \"SOURCE\" : \"%s\", \"DEST\" : \"%s\", \"ID\" : %d, \"TYPE\" : \"%s\", \"DATA\" : %s } }", response.credit.source, response.credit.dest, response.credit.ID, response.credit.type, object);
     }
@@ -129,11 +129,11 @@ void sendResponse (char * out, RESPONSE_t response)
     }
 
     else if (response.sensorval.type == SENSORVAL) {
-        sprintf (out, "{ \"RESPONSE\" : { \"SOURCE\" : \"%s\", \"DEST\" : \"%s\", \"ID\" : %d, \"TYPE\" : \"%s\", \"DATA\" : %s } }", response.sensorval.left, response.sensorval.right, response.sensorval.center, response.sensorval.distance, response.sensorval.theta, response.sensorval.direction);
-    }
-    else if (response.targeterr.type == TARGETERR) {
+        sprintf (out, "{ \"DEBUG\" : { \"left\" : %d, \"right\" : %d, \"center\" : %d, \"x\" : %d, \"y\" : %d, \"direction\" : %d } }", response.sensorval.left, response.sensorval.right, response.sensorval.center, response.sensorval.distance, response.sensorval.theta, response.sensorval.direction);
+    }*/
+    if (strncmp(response.targeterr.type, TARGETERR, 3) == 0) {
         targetErrResp (object, response.targeterr.targeterr);
-        sprintf (out, "{ \"RESPONSE\" : { \"SOURCE\" : \"%s\", \"DEST\" : \"%s\", \"ID\" : %d, \"TYPE\" : \"%s\", \"DATA\" : %s } }", response.targeterr.type, response.targeterr.ID, response.targeterr.source, response.targeterr.dest, object);
+        sprintf (out, "{ \"RESPONSE\" : { \"SOURCE\" : \"%s\", \"DEST\" : \"%s\", \"ID\" : %d, \"TYPE\" : \"%s\", \"DATA\" : %s } }", response.targeterr.source, response.targeterr.dest, response.targeterr.ID, response.targeterr.type, object);
     }
 }
 

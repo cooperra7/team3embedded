@@ -165,18 +165,25 @@ void DATA_Initialize ( void )
 
 void DATA_Tasks ( void )
 {
-    CONFIGLOC_t currentLoc;
-    NODE_t nextLoc;
+//    CONFIGLOC_t currentLoc;
+//    NODE_t nextLoc;
     CREDIT_t credit;
     COMMSTATS_t commstats;
+    TARGETERR_t targeterr;
+    
+    targeterr.left = 0;
+    targeterr.right = 0;
+    targeterr.unknown = 1;
+    targeterr.x = 0;
+    targeterr.y = 0;
     
     uint16_t leftval = 0;
     uint16_t rightval = 0;
     
-    currentLoc = configLocInit(0, 0, -1);
+//    currentLoc = configLocInit(0, 0, -1);
     credit = creditInit();
     commstats = commStatsInit();
-    nextLoc = nodeInit (-1, 0, 0, false, false);
+//    nextLoc = nodeInit (-1, 0, 0, false, false);
     
     while (1) {
         DATAMSG_t msg;
@@ -191,6 +198,9 @@ void DATA_Tasks ( void )
                 commstats.numJSONRequestsRecved += 1;
                 commstats.numJSONResponsesSent += 1;
                 RESPONSE_t response;
+                memset (response.sensorval.type, 0, 4);
+                memset (response.sensorval.source, 0, 4);
+                memset (response.sensorval.dest, 0, 4);
                 if (strncmp (msg.msg.request.type, COMMSTATS, 3) == 0) {
                     strncpy (response.commstats.type, COMMSTATS, 3);
                     strncpy (response.commstats.dest, msg.msg.request.source, 3);
@@ -220,6 +230,8 @@ void DATA_Tasks ( void )
                     strncpy(response.targeterr.type, TARGETERR, 3);
                     strncpy(response.targeterr.dest, msg.msg.request.source,3);
                     strncpy(response.targeterr.source, GRABBER, 3);
+                    response.targeterr.ID = msg.msg.request.ID;
+                    response.targeterr.targeterr = targeterr;
                     JSONencQSendResponse (response);
                 }
             }
@@ -230,9 +242,10 @@ void DATA_Tasks ( void )
                     commstats.numGoodMessagesRecved += msg.msg.response.commstats.commstats.numGoodMessagesRecved;
                     commstats.numCommErrors += msg.msg.response.commstats.commstats.numCommErrors;
                 }
-                else if (msg.msg.response.sensorval.type == SENSORVAL) {
+                else if (strncmp(msg.msg.response.sensorval.type, SENSORVAL, 3) == 0) {
                     leftval = msg.msg.response.sensorval.left;
                     rightval = msg.msg.response.sensorval.right;
+    JSONencQSendResponse (msg.msg.response);
                     REQUEST_t testReq;
                     testReq.ID = 1;
                     strcpy(testReq.dest, "TGL");
@@ -240,14 +253,17 @@ void DATA_Tasks ( void )
                     strcpy(testReq.type, "OBS");
 //                    JSONencQSendRequest (testReq);
                 }
+                else if (strncmp(msg.msg.response.targeterr.type, TARGETERR, 3) == 0) {
+                    targeterr = msg.msg.response.targeterr.targeterr;
+                }
             }
             else {
                 commstats.numJSONResponsesRecved += 1;
                 if (strncmp(msg.msg.response.targeterr.type, TARGETERR, 3) == 0) {
-                    VALUES_t vals;
-                    vals.val1 = msg.msg.response.targeterr.targeterr.distance;
-                    vals.val2 = msg.msg.response.targeterr.targeterr.theta;
-                    QSendVals (vals);
+                    //VALUES_t vals;
+                    //vals.val1 = msg.msg.response.targeterr.targeterr.distance;
+                    //vals.val2 = msg.msg.response.targeterr.targeterr.theta;
+                    //QSendVals (vals);
                 }
             }
         }
